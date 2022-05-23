@@ -1,3 +1,4 @@
+import "./style.css";
 import { createChart } from "lightweight-charts";
 
 const getData = async () => {
