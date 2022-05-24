@@ -30,9 +30,6 @@ const configurationData = {
   symbols_types: [...symbols_types, { name: "others", value: "others" }], // we have got that earlier using the getSymbolTypes nethod.
 };
 
-// Get all available symbols
-const AllSymbols = await getAllSymbols();
-
 export default {
   onReady: (callback) => {
     console.log("[onReady]: ", configurationData);
@@ -44,7 +41,8 @@ export default {
     symbolType,
     onResultReadyCallback
   ) => {
-    const newSymbols = AllSymbols.filter((symbol) => {
+    const symbols = await getAllSymbols();
+    const newSymbols = symbols.filter((symbol) => {
       const isExchangeValid = exchange === "" || symbol.exchange === exchange;
       const isFullSymbolContainsInput =
         symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !== -1;
