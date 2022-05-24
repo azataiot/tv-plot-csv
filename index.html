@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tradingview Charts from the CSV file</title>
-    <!-- config the project -->
-    <script type="module" src="/config.js"></script>
-    <!--    adding streaming capability-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
-    <!-- adding charting_library -->
-    <script type="text/javascript" src="/charting_library/charting_library.js"></script>
-    <!-- adding entrance point js -->
-    <script type="module" src="/main.js"></script>
-</head>
-
-<body style="margin: 0;">
-    <!-- Start your project here-->
-    <div id="tv-chart" class="tv-chart">
-    </div>
-</body>
-
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
