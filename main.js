@@ -44,6 +44,7 @@ const getVolume = async () => {
 const domElement = document.getElementById("tv-chart");
 const chartProperties = {
   height: domElement.offsetHeight,
+  width:domElement.offsetWidth
 };
 
 const chart = createChart(domElement, chartProperties);
