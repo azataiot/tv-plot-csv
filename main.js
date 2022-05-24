@@ -1,5 +1,17 @@
 import "./style.css";
-import { createChart } from "lightweight-charts";
+// Datafeed implementation, will be added later
+import Datafeed from "/src/datafeed.js";
+
+// construct the chart
+window.tvWidget = new TradingView.widget({
+  debug: appConfig.debug,
+  symbol: "Dukascopy:XAU/USD", //default symbol
+  interval: "1D",
+  fullscreen: true,
+  container: "tv-chart",
+  datafeed: Datafeed,
+  library_path: "/charting_library/",
+});
 
 const getData = async () => {
   const res = await fetch(
@@ -42,49 +54,3 @@ const getVolume = async () => {
 };
 
 const domElement = document.getElementById("tv-chart");
-const chartProperties = {
-  height: domElement.offsetHeight,
-  width:domElement.offsetWidth
-};
-
-const chart = createChart(domElement, chartProperties);
-
-const candleSeries = chart.addCandlestickSeries();
-
-const volumeSeries = chart.addHistogramSeries({
-  color: "#182233",
-  lineWidth: 2,
-  priceFormat: {
-    type: "volume",
-  },
-  overlay: true,
-  scaleMargins: {
-    top: 0.9,
-    bottom: 0,
-  },
-});
-
-const candleStickSeries = await getData();
-const volumeSeriesData = await getVolume();
-
-candleSeries.setData(candleStickSeries);
-volumeSeries.setData(volumeSeriesData);
-
-// resize
-
-function resize() {
-  const width = domElement.offsetWidth;
-  const height = domElement.offsetHeight;
-  // test
-  console.log("[window resized]:w,h", height, width);
-  chart.applyOptions({
-    width,
-    height,
-  });
-}
-
-resize();
-
-new ResizeObserver(resize).observe(domElement);
-
-chart.timeScale();
