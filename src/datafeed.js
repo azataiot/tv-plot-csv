@@ -3,6 +3,8 @@ import { getSymbolTypes, getAllSymbols } from "/src/dukascopy-helpers.js";
 // get all supported symbol types.
 const symbols_types = await getSymbolTypes();
 
+const lastBarsCache = new Map();
+
 // parse csv get content
 const getData = async () => {
   const res = await fetch("/download/xauusd-d1-bid-2019-03-01-2022-05-25.csv");
@@ -13,7 +15,7 @@ const getData = async () => {
     .map((row) => {
       const [timestamp, open, high, low, close, volume] = row.split(",");
       return {
-        time: timestamp / 1000.0,
+        time: timestamp,
         open: parseFloat(open),
         high: parseFloat(high),
         low: parseFloat(low),
@@ -107,6 +109,7 @@ export default {
     onHistoryCallback,
     onErrorCallback
   ) => {
+    const { from, to, firstDataRequest } = periodParams;
     console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
     // get timeframe string for the dukascopy-node
     let timeframe;
@@ -124,8 +127,21 @@ export default {
 
     // return data from the csv
     const data = await getData();
-    console.log(data);
-    // onHistoryCallback(data, { noData: false });
+    let bars = [];
+    // test data
+    console.log("data", data);
+    console.log("requested:", from, to);
+    bars = data.filter((bar) => {
+      if (bar.time >= from && bar.time < to) {
+        return true;
+      }
+    });
+    console.log("bars", bars);
+    if (bars.length > 0) {
+      onHistoryCallback(bars, { noData: false });
+    } else {
+      onHistoryCallback([], { noData: true });
+    }
   },
   subscribeBars: (
     symbolInfo,
