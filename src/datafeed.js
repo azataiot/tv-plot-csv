@@ -1,6 +1,28 @@
 import { getSymbolTypes, getAllSymbols } from "/src/dukascopy-helpers.js";
+
 // get all supported symbol types.
 const symbols_types = await getSymbolTypes();
+
+// parse csv get content
+const getData = async () => {
+  const res = await fetch("/download/xauusd-d1-bid-2019-03-01-2022-05-25.csv");
+  const resp = await res.text();
+  const cdata = resp
+    .split("\n")
+    .slice(1)
+    .map((row) => {
+      const [timestamp, open, high, low, close, volume] = row.split(",");
+      return {
+        time: timestamp / 1000.0,
+        open: parseFloat(open),
+        high: parseFloat(high),
+        low: parseFloat(low),
+        close: parseFloat(close),
+        volume: parseFloat(volume),
+      };
+    });
+  return cdata;
+};
 
 // configuration data for the chart
 const configurationData = {
@@ -78,7 +100,7 @@ export default {
     };
     onSymbolResolvedCallback(symbolInfo);
   },
-  getBars: (
+  getBars: async (
     symbolInfo,
     resolution,
     periodParams,
@@ -86,6 +108,24 @@ export default {
     onErrorCallback
   ) => {
     console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
+    // get timeframe string for the dukascopy-node
+    let timeframe;
+    if (resolution === "1D") {
+      timeframe = "d1";
+    } else if (parseInt(resolution) >= 60) {
+      timeframe = "h1";
+    } else if (parseInt(resolution) >= 15) {
+      timeframe = "m15";
+    } else if (parseInt(resolution) >= 5) {
+      timeframe = "m5";
+    } else {
+      timeframe = "m1";
+    }
+
+    // return data from the csv
+    const data = await getData();
+    console.log(data);
+    // onHistoryCallback(data, { noData: false });
   },
   subscribeBars: (
     symbolInfo,
